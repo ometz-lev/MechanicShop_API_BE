@@ -32,6 +32,7 @@
 # Create a virtual environment  python -m venv venv
 # Activate the virtual environment windows: venv\Scripts\activate   mac/linux: source venv/bin/activate
 # install dependencies pip install -r requirements.txt
+# Create a config.py file to store SQLALCHEMY_DATABASE_URI and p/s
 # Run database
 # Start the flask application
 # Run python file
