@@ -85,16 +85,23 @@
           "response": []
         },
         {
-          "name": "Update Customer",
+          "name": "Update Customer With Token",
           "request": {
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{json_web_token_0wqa}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"jdoe23@email.com\",\r\n    \"id\": 1,\r\n    \"name\": \"Johnny Doe\",\r\n    \"phone\": \"123-456-7891\"\r\n}\r\n",
+              "raw": "{\r\n    \"id\": 1,\r\n    \"email\": \"jdoe2@email.com\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -102,7 +109,7 @@
               }
             },
             "url": {
-              "raw": "http://127.0.0.1:5000/customers/1",
+              "raw": "http://127.0.0.1:5000/customers",
               "protocol": "http",
               "host": [
                 "127",
@@ -112,8 +119,7 @@
               ],
               "port": "5000",
               "path": [
-                "customers",
-                "1"
+                "customers"
               ]
             }
           },
@@ -143,7 +149,39 @@
           "response": []
         },
         {
-          "name": "Create Customer",
+          "name": "Delete Customer With Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{json_web_token_19xm}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/customers",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Token For Customer",
           "request": {
             "auth": {
               "type": "noauth"
@@ -152,7 +190,39 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\":\"cbob@email.com\",\r\n    \"name\":\"Cathy Bob\",\r\n    \"phone\":\"444-333-3333\"\r\n}",
+              "raw": "{\r\n    \"email\":\"jdoe@email.com\",\r\n    \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customers/login",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customers",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"rban@email.com\",\r\n    \"name\": \"Ray Ban\",\r\n    \"phone\": \"888-999-9999\",\r\n    \"password\":\"99999\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -175,6 +245,47 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Paginate Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"vin\":\"55555GFISJABCNBUKODNH9\",\r\n    \"service_date\": \"2026-01-30\",\r\n    \"service_desc\":\"Tyre Rotation\",\r\n    \"customer_id\": 6\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/customers?page=1&per_page=3",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "customers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -188,7 +299,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\":\"pdoe@email.com\",\r\n    \"name\":\"Pat Doe\",\r\n    \"phone\":\"333-222-1111\",\r\n    \"salary\":60000.00\r\n}",
+              "raw": "{\r\n    \"email\":\"cbrown@email.com\",\r\n    \"name\":\"Carl Brown\",\r\n    \"phone\":\"678-777-7777\",\r\n    \"salary\":60000.00\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -219,7 +330,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "  {\r\n    \"salary\": 55000.0\r\n   }",
+              "raw": "  {\r\n    \"name\": \"Jim Brown\",\r\n    \"email\":\"jbrown@email.com\",\r\n    \"phone\": \"655-555-5555\"\r\n   }",
               "options": {
                 "raw": {
                   "language": "json"
@@ -227,7 +338,7 @@
               }
             },
             "url": {
-              "raw": "http://127.0.0.1:5000/mechanics/1",
+              "raw": "http://127.0.0.1:5000/mechanics/7",
               "protocol": "http",
               "host": [
                 "127",
@@ -238,7 +349,7 @@
               "port": "5000",
               "path": [
                 "mechanics",
-                "1"
+                "7"
               ]
             }
           },
@@ -311,6 +422,76 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Sort Mechanics Based On Number of Service Tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"vin\":\"55555GFISJABCNBUKODNH9\",\r\n    \"service_date\": \"2026-01-30\",\r\n    \"service_desc\":\"Tyre Rotation\",\r\n    \"customer_id\": 6\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/mechanics/top",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "mechanics",
+                "top"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Mechanic By Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"vin\":\"55555GFISJABCNBUKODNH9\",\r\n    \"service_date\": \"2026-01-30\",\r\n    \"service_desc\":\"Tyre Rotation\",\r\n    \"customer_id\": 6\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/mechanics/search?name=brown",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "mechanics",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "brown"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -324,7 +505,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"vin\":\"555555ABCJBUKODNH9\",\r\n    \"service_date\": \"2026-06-30\",\r\n    \"service_desc\":\"Cracked windscreen\",\r\n    \"customer_id\": 2\r\n\r\n}",
+              "raw": "{\r\n    \"vin\":\"888855GFISJABCNBUKODNH9\",\r\n    \"service_date\": \"2026-08-30\",\r\n    \"service_desc\":\"Replace timing belt\",\r\n    \"customer_id\": 8\r\n\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -332,7 +513,7 @@
               }
             },
             "url": {
-              "raw": "http://127.0.0.1:5000/service_tickets",
+              "raw": "http://127.0.0.1:5000/service-tickets",
               "protocol": "http",
               "host": [
                 "127",
@@ -342,7 +523,7 @@
               ],
               "port": "5000",
               "path": [
-                "service_tickets"
+                "service-tickets"
               ]
             }
           },
@@ -363,7 +544,7 @@
               }
             },
             "url": {
-              "raw": "http://127.0.0.1:5000/service_tickets/1/assign-mechanic/2",
+              "raw": "http://127.0.0.1:5000/service-tickets/8/assign-mechanic/2",
               "protocol": "http",
               "host": [
                 "127",
@@ -373,8 +554,8 @@
               ],
               "port": "5000",
               "path": [
-                "service_tickets",
-                "1",
+                "service-tickets",
+                "8",
                 "assign-mechanic",
                 "2"
               ]
@@ -388,7 +569,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://127.0.0.1:5000/service_tickets",
+              "raw": "http://127.0.0.1:5000/service-tickets",
               "protocol": "http",
               "host": [
                 "127",
@@ -398,7 +579,7 @@
               ],
               "port": "5000",
               "path": [
-                "service_tickets"
+                "service-tickets"
               ]
             }
           },
@@ -428,8 +609,298 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Get Service Tickets For Customer With Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTQzNzMyODQsImlhdCI6MTc5NDM2OTY4NCwic3ViIjoiMSJ9.nIFyVvY0dLcGYfNK4acliwmJnlU-Jhr83wHZOx7HnfA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/service-tickets/my-tickets",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "service-tickets",
+                "my-tickets"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Service Tickets With Mechanics & Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/service-tickets/mechanics",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "service-tickets",
+                "mechanics"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Service Tickets By Adding/Removing Mechanic",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"add_mechanic_ids\":[4],\r\n    \"remove_mechanic_ids\":[6]\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/service-tickets/2/edit",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "service-tickets",
+                "2",
+                "edit"
+              ]
+            }
+          },
+          "response": []
         }
       ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "Get All Inventory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/inventory",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "inventory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Inventory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"V8 Engine oil\",\r\n    \"price\": \"40.00\"\r\n    \r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/inventory",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "inventory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Inventory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5000/inventory/10",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "inventory",
+                "10"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Inventory",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"price\": 200.0\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/inventory/2",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "inventory",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Inventory to Service Ticket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"inventory_id\": 8,\r\n    \"quantity\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/service-tickets/4/inventory",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "service-tickets",
+                "4",
+                "inventory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Inventory For a Single Service Ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"vin\":\"55555GFISJABCNBUKODNH9\",\r\n    \"service_date\": \"2026-01-30\",\r\n    \"service_desc\":\"Tyre Rotation\",\r\n    \"customer_id\": 6\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:5000/service-tickets/2/inventory",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "5000",
+              "path": [
+                "service-tickets",
+                "2",
+                "inventory"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "json_web_token_0ti4",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_159p",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_01dt",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_19xm",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0wqa",
+      "secret": true
     }
   ]
 }
