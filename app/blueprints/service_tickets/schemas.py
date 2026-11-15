@@ -11,5 +11,17 @@ class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
         load_instance = False
         include_fk = True
 
+#Schema for editing service tickets (adding or removing mechanics)
+class EditServiceTicketSchema(ma.Schema):
+    add_mechanic_ids = fields.List(fields.Integer(), required=True)
+    remove_mechanic_ids = fields.List(fields.Integer(), required=True)
+
+    class Meta:
+        fields = ('add_mechanic_ids', 'remove_mechanic_ids')
+
+
+ #Create instances of the schemas for use in routes 
 service_ticket_schema = ServiceTicketSchema()
 service_tickets_schema = ServiceTicketSchema(many=True)
+
+edit_service_ticket_schema = EditServiceTicketSchema()

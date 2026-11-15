@@ -3,18 +3,21 @@
 │   ├── __init__.py - create_app() lives here
 │   ├── extensions.py
 │   ├── /blueprints
-│		│		├──/customer
-│		│				├──__init__.py  - Initialize Customer Blueprint
-│		│				├── routes.py  - Create Customer Controllers/routes
-│		│				└── schemas.py
-		│		├──/mechanic
-│		│				├──__init__.py  - Initialize Mechanic Blueprint
-│		│				├── routes.py  - Create Mechanic Controllers/routes
-│		│				└── schemas.py
-		│		├──/service ticket
-│		│				├──__init__.py  - Initialize Service Ticket Blueprint
-│		│				├── routes.py  - Create Service Ticket Controllers/routes
-│		│				└── schemas.py
+│	│		├──/customer
+│	│				├──__init__.py  - Initialize Customer Blueprint
+│	│				├── routes.py  - Create Customer Controllers/routes
+│	│				└── schemas.py
+|	│		├──/mechanic
+│	│				├──__init__.py  - Initialize Mechanic Blueprint
+│	│				├── routes.py  - Create Mechanic Controllers/routes
+│	│				└── schemas.py
+|	│		├──/service ticket
+│	│				├──__init__.py  - Initialize Service Ticket Blueprint
+│	│				├── routes.py  - Create Service Ticket Controllers/routes
+│	│				└── schemas.py
+│   ├── /utils
+│	│        └── util.py
 │   └── models.py
 ├── run.py
+├── .gitignore
 └── config.py
