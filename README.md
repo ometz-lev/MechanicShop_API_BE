@@ -8,6 +8,7 @@
 # Use POSTMAN to test CRUD operations
 
 # Features:
+# filestructure.txt outlines the structure of the folders and components for the app
 # Customer Management: create, get, update and delete records
 # Mechanic management: manage mechanic information
 # Service ticket management: create, retrieve, update and delete vehicle service tickets
