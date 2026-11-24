@@ -6,6 +6,8 @@
 # A default rate limit is added to offer blanket protection to all routes. Rate limiters are added to the DELETE routes to 
 # prevent accidental deletion of records.
 # Use POSTMAN to test CRUD operations
+# Password hashing, authentication, and rate limiting.
+# Units tests are implemented to test the functionality of each endpoints.
 
 # Features:
 # filestructure.txt outlines the structure of the folders and components for the app
@@ -46,3 +48,31 @@
 # Enter the API endpoint URL.
 # Provide a JSON request body when required.
 # Click Send and review the response and HTTP status code.
+
+# Flask-Swagger Documentation and Unit Tests
+# The Swagger.yaml serves as a user-friendly guide explaining how one can manage the Flask API and get an understanding of the different responses.
+# Few examples of unit tests:
+Customers
+- POST /customers/ – Register a customer.
+- GET /customers/ – Retrieve customers.
+- POST /customers/login – Authenticate a customer.
+- DELETE /customers/ – Delete the authenticated customer's account.
+Mechanics
+- POST /mechanics/ – Create a mechanic.
+- GET /mechanics/ – Retrieve mechanics.
+- POST /mechanics/login – Authenticate a mechanic.
+Service Tickets
+- POST /service-tickets/ – Create a service ticket.
+- GET /service-tickets/ – Retrieve service tickets.
+- PUT /service-tickets/{ticket_id} – Update a service ticket.
+- DELETE /service-tickets/{ticket_id} – Delete a service ticket.
+- POST /service-tickets/{ticket_id}/assign-mechanic/{mechanic_id} – Assign a mechanic.
+Inventory
+- POST /inventory/ – Create an inventory item.
+- GET /inventory/ – Retrieve inventory items.
+- PUT /inventory/{inventory_id} – Update an inventory item.
+- DELETE /inventory/{inventory_id} – Delete an inventory item.
+# The unit tests are found in the files: test_customer.py, test_mechanic.py, test_serviceticket.py and test_inventory.py
+# There are also unit tests for authentication/authorization which requires a JWT token to perform certain operations such as delete a resource.
+# Command to test the test files: python -m unittest discover
+
