@@ -17,6 +17,8 @@
 │	│				└── schemas.py
 │   ├── /utils
 │	│        └── util.py
+│	├── /static
+│	│         └── swagger.yaml
 │   └── models.py
 ├── run.py
 ├── .gitignore

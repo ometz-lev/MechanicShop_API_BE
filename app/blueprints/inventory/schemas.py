@@ -13,7 +13,7 @@ class InventoryServiceSchema(ma.SQLAlchemyAutoSchema):
 
 # Schema for serializing and deserializing Inventory objects
 class InventorySchema(ma.SQLAlchemyAutoSchema):
-   
+
     class Meta:
         model = Inventory
         load_instance = False

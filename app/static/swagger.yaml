@@ -1,0 +1,1159 @@
+#app/static/swagger.yaml
+
+swagger: '2.0'
+info:
+  title: "Mechanic Shop API"
+  description: "A RESTful API for managing customers, mechanics, service tickets, inventory items, and mechanic assignments.
+                Supports JWT authentication for protected operations."
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "Enter your JWT token using format: Bearer Your_JWT_Token"
+
+paths:
+  /customers/: #endpoint
+    post: #Post request
+      tags:
+        - Customers
+      summary: "Endpoint to create/register a new customer."
+      description: "Creates a customer account. Passwords are hashed before being stored; and emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Customer Registration details."
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCustomerPayload"
+      responses:
+        201:
+          description: "Customer successfully created"
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+          examples:
+            application/json:
+              id: 1
+              name: John Doe
+              email: jdoe@email.com
+              phone: 111-111-1111
+        400:
+          description: "Invalid customer information or email already exists"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    get: #Get request
+      tags:
+        - Customers
+      summary: "Retrieve all Customers"
+      description: "Endpoint to retrieve a list of all customers. Supports optional pagination using page and per_page query parameters."
+      parameters:
+        - name: page
+          in: query
+          type: integer
+          required: false
+          description: "Page number for pagination"
+          example: 1
+
+        - name: per_page
+          in: query
+          type: integer
+          required: false
+          description: "Number of customers per page. Must be between 1 and 20."
+          example: 5
+      responses:
+        200:
+          description: "Customers retrieved successfully"           
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/CustomerResponse" 
+        400:
+          description: "Invalid pagination parameters"
+          schema:
+            $ref: "#/definitions/ErrorResponse" 
+
+    put: #Put request
+      tags:
+        - Customers
+      summary: "Endpoint to update the authenticated customer."
+      description: "Updates the customer account associated with JWT token."
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Include only the customer fields to update."
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCustomerPayload"
+      responses:
+        200:
+          description: "Customer successfully updated"
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+          examples:
+            application/json:
+              id: 1
+              name: Dohn Joe
+              email: dohnj@email.com
+              phone: 111-111-1111
+        400:
+          description: "Invalid customer information"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Customer not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete: #Delete request
+      tags:
+        - Customers
+      summary: "Enpoint to delete the authenticated customer"
+      description: "Deletes the customer account associated with the JWT token."
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Customer successfully deleted"           
+          schema:
+            $ref: "#/definitions/DeleteResponse"
+          examples:
+            application/json:
+              message: "successfully deleted user <customer_id>." 
+        404:
+          description: "Customer not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /customers/{customer_id}:
+    get: #Get request
+      tags:
+        - Customers
+      summary: "Retrieve a customer by ID"
+      description: "Returns the customer associated with the supplied customer ID."
+      parameters:
+        - name: customer_id
+          in: path
+          type: integer
+          required: true
+          description: "ID of the customer to retrieve"
+      responses:
+        200:
+          description: "Customer retrieved successfully"
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+        404:
+          description: "Customer not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /customers/login:
+    post: #Post request
+      tags:
+        - Customers
+      summary: "Login endpoint, (generates token)"
+      description: "Authenticates a customer using email and password and returns a JWT authentication token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Successfully logged in"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+              auth_token: "your_jwt_token"
+              message: "Successfully logged in"
+              status: "success"
+        400:
+          description: "Invalid login request"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Invalid email or password"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
+###Mechanics
+  /mechanics/: #endpoint
+    post: #Post request
+      tags:
+        - Mechanics
+      summary: "Endpoint to create/register a new mechanic."
+      description: "Creates a new mechanic account. Passwords are hashed before being stored; and emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information required to create a new Mechanic."
+          required: true
+          schema:
+            $ref: "#/definitions/CreateMechanicPayload"
+      responses:
+        201:
+          description: "Mechanic successfully created"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              id: 1
+              name: Ray Ban
+              email: rban@example.com
+              phone: 111-111-1111
+              salary: 50000
+        400:
+          description: "Invalid mechanic information or email already exists"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    get: #Get request
+      tags:
+        - Mechanics
+      summary: "Retrieve all mechanics"
+      description: "Returns a list of all registered mechanics. The response is cached for 60 seconds."
+      responses:
+        200:
+          description: "List of mechanics retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MechanicResponse"
+
+    put: #Put request
+      tags:
+        - Mechanics
+      summary: "Endpoint to update the authenticated mechanic."
+      description: "Updates the mechanic account associated with the JWT token."
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Include only the mechanic fields to update"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateMechanicPayload"
+      responses:
+        200:
+          description: "Mechanic successfully updated"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              id: 1
+              name: Ray Ban
+              email: rban1@email.com
+              phone: 111-111-1111
+              salary: 50000
+        400:
+          description: "Invalid mechanic information"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete: #Delete request
+      tags:
+        - Mechanics
+      summary: "Delete the authenticated mechanic"
+      description: "Deletes the mechanic account associated with the JWT token."
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Mechanic deleted successfully."
+          schema:
+            $ref: "#/definitions/DeleteResponse"
+        404:
+          description: "Mechanic not found."   
+
+  /mechanics/{mechanic_id}:
+    get:
+      tags:
+        - Mechanics
+      summary: "Retrieve a mechanic by ID"
+      description: "Returns the mechanic associated with the supplied mechanic ID."
+      parameters:
+        - name: mechanic_id
+          in: path
+          type: integer
+          required: true
+          description: "ID of the mechanic to retrieve"
+      responses:
+        200:
+          description: "Mechanic retrieved successfully"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+        404:
+          description: "Mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/login:
+    post: #Post request
+      tags:
+        - Mechanics
+      summary: "Login endpoint, (generates token)"
+      description: "Authenticates a mechanic using their email and password and returns a JWT token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Successfully logged in"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+              auth_token: "your_jwt_token"
+              message: "Successfully logged in"
+              status: "success"
+        400:
+          description: "Invalid login request"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Invalid email or password"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/top:
+    get:
+      tags:
+        - Mechanics
+      summary: "Retrieve mechanics ranked by service tickets"
+      description: "Returns mechanics sorted by the number of service tickets they have worked on, from highest to lowest."
+      responses:
+        200:
+          description: "Top mechanics retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/TopMechanic"
+
+  /mechanics/search:
+    get:
+      tags:
+        - Mechanics
+      summary: "Search mechanics by name"
+      description: "Returns mechanics whose names contain the supplied search text. Search is case-insensitive."
+      parameters:
+        - in: query
+          name: name
+          required: true
+          type: string
+          description: "Full name or part of a mechanic's name."
+      responses:
+        200:
+          description: "Matching mechanics retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MechanicResponse"
+        400:
+          description: "Search name was not provided."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+###Service Tickets
+  /service-tickets/: #endpoint
+    post: #Post request
+      tags:
+        - Service Tickets
+      summary: "Endpoint to create/register a new service."
+      description: "Creates a service ticket for a customer. A duplicate VIN and service date combination is rejected."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information required to create a new Service Ticket."
+          required: true
+          schema:
+            $ref: "#/definitions/CreateServiceTicketPayload"
+      responses:
+        201:
+          description: "Service ticket successfully created"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              vin: GFHJCB3DJPPUI.......
+              service_date: "2026-06-01"
+              service_desc: Oil Change
+              customer_id: 2
+        400:
+          description: "Invalid input or duplicate service ticket."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    get: #Get request
+      tags:
+        - Service Tickets
+      summary: "Retrieve all service tickets"
+      description: "Returns a list of all service tickets. The response is cached for 60 seconds."
+      responses:
+        200:
+          description: "List of service tickets retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ServiceTicketResponse"
+
+  /service-tickets/{service_ticket_id}/assign-mechanic/{mechanic_id}:
+    put: #Put request
+      tags:
+        - Service Tickets
+      summary: "Endpoint to assign mechanic to service ticket"
+      description: "Updates a specific service ticket by assigning a mechanic."
+      parameters:
+        - in: "path"
+          name: "service_ticket_id"
+          description: "The ID of the service ticket to update."
+          type: integer
+          required: true
+        - in: "path"
+          name: "mechanic_id"
+          description: "The ID of the mechanic to assign."
+          type: integer
+          required: true
+      responses:
+        200:
+          description: "Mechanic successfully updated"
+          schema:
+            $ref: "#/definitions/MechanicAssignmentResponse"
+        404:
+          description: "Service ticket or mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        409:
+          description: "Mechanic is already assigned to this service ticket."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Unable to update mechanic assignment."
+
+  /service-tickets/{service_ticket_id}/remove-mechanic/{mechanic_id}:
+    put: #Put request
+      tags:
+        - Service Tickets
+      summary: "Remove a mechanic from a service ticket."
+      description: "Requires a valid customer JWT token. The customer should be authorized to manage the service ticket."
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "path"
+          name: "service_ticket_id"
+          description: "The ID of the service ticket to update."
+          type: integer
+          required: true
+        - in: "path"
+          name: "mechanic_id"
+          description: "The ID of the mechanic to remove."
+          type: integer
+          required: true
+      responses:
+        200:
+          description: "Mechanic successfully removed"
+          schema:
+            $ref: "#/definitions/RemoveMechanicResponse"
+        403:
+          description: "Authenticated customer does not own this service ticket."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Customer, service ticket, or mechanic not found, or mechanic is not assigned."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Unable to update mechanic assignment."  
+
+  /service-tickets/mechanics:
+    get:
+      tags:
+        - Service Tickets
+      summary: "Retrieve mechanics assigned to all service tickets."
+      description: "Returns service tickets with their associated customer and assigned mechanics. The response is cached for 60 seconds."
+      responses:
+        200:
+          description: "Assigned mechanics retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ServiceTicketWithMechanics"
+
+  /service-tickets/my-tickets:
+    get:
+      tags:
+        - Service Tickets
+      summary: "Retrieve the authenticated customer's service tickets."
+      description: "Returns only service tickets associated with the customer identified by the JWT token."
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Customer service tickets retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ServiceTicketResponse"
+
+  /service-tickets/{ticket_id}/edit:
+    put:
+      tags:
+        - Service Tickets
+      summary: "Add or remove mechanics from a service ticket."
+      description: "Adds and/or removes mechanics using their IDs. Both arrays are optional."
+      parameters:
+        - in: path
+          name: ticket_id
+          description: "The ID of the service ticket to edit."
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/EditServiceTicket"
+      responses:
+        200:
+          description: "Service ticket and mechanic assignments updated successfully."
+          schema:
+            $ref: "#/definitions/ServiceTicketWithMechanics"
+        400:
+          description: "Invalid request data."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Service ticket or one or more mechanics not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Unable to update service ticket."
+
+  /service-tickets/{ticket_id}:
+    delete:
+      tags:
+        - Service Tickets
+      summary: "Delete a service ticket."
+      description: "Delete a specific service ticket by its ID."
+      parameters:
+        - in: path
+          name: ticket_id
+          description: "Include the service ticket id to the endpoint."
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Service ticket deleted successfully."
+          schema:
+            $ref: "#/definitions/DeleteServiceTicketResponse"
+        404:
+          description: "Service ticket not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /service-tickets/{ticket_id}/inventory:
+    post:
+      tags:
+        - Service Tickets
+      summary: "Add an inventory item to a service ticket."
+      description: "Adds an inventory item and its quantity to a service ticket. The item's current name and price are copied into the association record."
+      parameters:
+        - in: path
+          name: ticket_id
+          description: "Enter the service ticket id."
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/AddInventoryToTicket"
+      responses:
+        201:
+          description: "Inventory item successfully added."
+          schema:
+            $ref: "#/definitions/AddInventoryResponse"
+        400:
+          description: "Inventory ID is required or quantity is invalid."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Service ticket or inventory item not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    get:
+      tags:
+        - Service Tickets
+      summary: "Retrieve inventory assigned to a service ticket."
+      parameters:
+        - in: path
+          name: ticket_id
+          description: "Include the service ticket id to the endpoint."
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Inventory items retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/InventoryService"
+        404:
+          description: "Service ticket not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /inventory/:
+    post:
+      tags:
+        - Inventory
+      summary: "Create a new inventory item."
+      description: "Creates a new inventory item. Inventory names must be unique. Limited to 10 requests per hour."
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: "Inventory item details."
+          schema:
+            $ref: "#/definitions/CreateInventory"
+      responses:
+        201:
+          description: "Inventory item created successfully."
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+        400:
+          description: "Invalid input or inventory item already exists."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    get:
+      tags:
+        - Inventory
+      summary: "Retrieve all inventory items."
+      description: "Returns all inventory items. The response is cached for 60 seconds."
+      responses:
+        200:
+          description: "Inventory items retrieved successfully."
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/InventoryResponse"
+
+  /inventory/{inventory_id}:
+    get:
+      tags:
+        - Inventory
+      summary: "Retrieve an inventory item by ID."
+      description: "Returns a specific inventory item by its ID."
+      parameters:
+        - in: path
+          name: inventory_id
+          required: true
+          type: integer
+          description: The ID of the inventory item.
+      responses:
+        200:
+          description: "Inventory item retrieved successfully."
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+        404:
+          description: "Inventory item not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    put:
+      tags:
+        - Inventory
+      summary: "Update an inventory item."
+      description: "Updates an existing inventory item. All fields are optional."
+      parameters:
+        - in: path
+          name: inventory_id
+          required: true
+          type: integer
+          description: "The ID of the inventory item to update."
+        - in: body
+          name: body
+          required: true
+          description: "Inventory fields to update."
+          schema:
+            $ref: "#/definitions/UpdateInventory"
+      responses:
+        200:
+          description: "Inventory item updated successfully."
+          schema:
+            $ref: "#/definitions/InventoryResponse"
+        400:
+          description: "Invalid inventory data."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Inventory item not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete:
+      tags:
+        - Inventory
+      summary: "Delete an inventory item."
+      description: "Delete a specific inventory item by its ID."
+      parameters:
+        - in: path
+          name: inventory_id
+          required: true
+          type: integer
+          description: "The ID of the inventory item to delete."
+      responses:
+        200:
+          description: "Inventory item deleted successfully."
+          schema:
+            $ref: "#/definitions/DeleteInventoryResponse"
+        404:
+          description: "Inventory item not found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
+  
+definitions: 
+  LoginCredentials:
+    type: "object"
+    properties:
+    email:
+      type: string
+      format: email
+      example: "jdoe@email.com"
+    password:
+      type: string
+      format: password
+      example: "your_password"
+      
+    required:
+      - email
+      - password
+      
+  LoginResponse:
+    type: "object"
+    properties:
+      auth_token:
+        type: "string"
+      message:
+        type: "string"
+      status:
+        type: "string"
+
+  CreateCustomerPayload:
+    type: "object"
+    properties:
+      name:
+      type: string
+      example: "John Doe"
+    email:
+      type: string
+      format: email
+      example: "jdoe@email.com"
+    phone:
+      type: string
+      example: "111-111-1111"
+    password:
+      type: string
+      format: password
+      example: "your_password"
+      
+    required:
+      - name
+      - email
+      - phone
+      - password
+
+  CustomerResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+        example: "jdoe@email.com"
+      phone:
+        type: string
+        example: "111-111-1111"
+
+  UpdateCustomerPayload:
+    type: object
+    description: "Include only the fields that need to be updated."
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+      phone:
+        type: string
+      password:
+        type: string
+        format: password
+
+  DeleteResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Successfully deleted account."
+
+  ErrorResponse:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+
+  CreateMechanicPayload:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+        format: email
+      phone:
+        type: "string"
+      password:
+        type: "string"
+      salary:
+        type: number
+        format: double
+      
+    required:
+      - name
+      - email
+      - phone
+      - password
+      - salary
+
+  MechanicResponse:                
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        name:
+          type: "string"
+        email:
+          type: "string"
+          format: email
+        phone:
+          type: "string"
+        salary:
+          type: number
+          format: double
+
+  UpdateMechanicPayload:
+    type: "object"
+    description: "Include only the fields that need to be updated."
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+        format: email
+      phone:
+        type: "string"
+      password:
+        type: "string"
+        format: password
+      salary:
+        type: number
+        format: double
+
+  TopMechanic:
+    type: object
+    properties:
+      mechanic_id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Ray Ban"
+      email:
+        type: string
+        format: email
+        example: "rban@example.com"
+      service_ticket_count:
+        type: integer
+        example: 12
+
+  CreateServiceTicketPayload:
+    type: object
+    required:
+      - vin
+      - service_date
+      - service_desc
+      - customer_id
+    properties:
+      vin:
+        type: string
+        example: "1HGCM82633A123456"
+      service_date:
+        type: string
+        format: date
+        example: "2026-11-22"
+      service_desc:
+        type: string
+        example: "Oil change"
+      customer_id:
+        type: integer
+        example: 1
+
+  ServiceTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      vin:
+        type: string
+        example: "1HGCM82633A123456"
+      service_date:
+        type: string
+        format: date
+        example: "2026-11-22"
+      service_desc:
+        type: string
+        example: "Oil change"
+      customer_id:
+        type: integer
+        example: 1
+
+  EditServiceTicket:
+    type: object
+    properties:
+      add_mechanic_ids:
+        type: array
+        items:
+          type: integer
+        example:
+          - 2
+          - 3
+      remove_mechanic_ids:
+        type: array
+        items:
+          type: integer
+        example:
+          - 1
+
+  MechanicAssignmentResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Mechanic successfully assigned to service ticket"
+      service_ticket_id:
+        type: integer
+        example: 1
+      mechanic_id:
+        type: integer
+        example: 2
+      assigned_mechanics:
+        type: array
+        items:
+          $ref: "#/definitions/AssignedMechanic"
+
+  RemoveMechanicResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Mechanic successfully removed from service ticket"
+      service_ticket:
+        type: integer
+        example: 1
+      mechanic_id:
+        type: integer
+        example: 2
+
+  AssignedMechanic:
+    type: object
+    properties:
+      mechanic_id:
+        type: integer
+        example: 2
+      mechanic_name:
+        type: string
+        example: "John Smith"
+
+  ServiceTicketWithMechanics:
+    type: object
+    properties:
+      service_ticket_id:
+        type: integer
+        example: 1
+      vin:
+        type: string
+        example: "1HGCM82633A123456"
+      service_desc:
+        type: string
+        example: "Oil change"
+      customer:
+        type: object
+        properties:
+          customer_id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "Jane Doe"
+          email:
+            type: string
+            example: "jane@example.com"
+          phone:
+            type: string
+            example: "555-123-4567"
+      mechanics:
+        type: array
+        items:
+          $ref: "#/definitions/MechanicSummary"
+
+  MechanicSummary:
+    type: object
+    properties:
+      mechanic_id:
+        type: integer
+        example: 2
+      name:
+        type: string
+        example: "John Smith"
+      email:
+        type: string
+        example: "john@example.com"
+      phone:
+        type: string
+        example: "555-987-6543"
+
+  AddInventoryToTicket:
+    type: object
+    required:
+      - inventory_id
+    properties:
+      inventory_id:
+        type: integer
+        example: 3
+      quantity:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 2
+
+  AddInventoryResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Inventory item successfully added to service ticket."
+      inventory_service:
+        $ref: "#/definitions/InventoryService"
+
+  InventoryService:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      inventory_id:
+        type: integer
+        example: 3
+      service_ticket_id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Engine Oil"
+      price:
+        type: number
+        format: double
+        example: 25.99
+      quantity:
+        type: integer
+        example: 2
+
+  DeleteServiceTicketResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Service ticket 1 deleted successfully."
+  
+  CreateInventory:
+    type: object
+    required:
+      - name
+      - price
+    properties:
+      name:
+        type: string
+        example: "Engine Oil"
+      price:
+        type: number
+        format: double
+        example: 25.99
+
+  UpdateInventory:
+    type: object
+    description: All fields are optional. Include only the fields you want to update.
+    properties:
+      name:
+        type: string
+        example: "Synthetic Engine Oil"
+      price:
+        type: number
+        format: double
+        example: 29.99
+
+  InventoryResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Engine Oil"
+      price:
+        type: number
+        format: double
+        example: 25.99
+
+  DeleteInventoryResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Successfully deleted inventory item 1"
+
+

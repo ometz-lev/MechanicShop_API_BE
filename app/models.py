@@ -4,6 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from datetime import date
 from typing import List
 from app.extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 ## Customer model representing a customer in the system
@@ -14,7 +15,15 @@ class Customer(db.Model):
     name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     email: Mapped[str] = mapped_column(db.String(360), nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(db.String(255), nullable=False)
-    password: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    password_hash: Mapped[str] = mapped_column(db.String(255), nullable=False)
+
+    # Hash password before storing it
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    # Verify password during login
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     # One-to-Many relationship with Service_ticket
     service_tickets: Mapped[List["Service_ticket"]] = db.relationship(back_populates="customer", cascade="all, delete-orphan")
@@ -58,7 +67,7 @@ class Service_ticket(db.Model):
     # Many-to-Many relationship with Mechanic
     mechanics: Mapped[List["Mechanic"]] = db.relationship(secondary=service_mechanics, back_populates="service_tickets")
 
-   # Many-to-Many relationship with Inventory
+    # Many-to-Many relationship with Inventory
     inventory_services: Mapped[List['InventoryService']] = db.relationship(back_populates="service_ticket", cascade="all, delete-orphan")
 
 ## Mechanic model representing a mechanic in the system
@@ -68,8 +77,17 @@ class Mechanic(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     email: Mapped[str] = mapped_column(db.String(360), nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(db.String(255), nullable=False)
     phone: Mapped[str] = mapped_column(db.String(255), nullable=False)
     salary: Mapped[float] = mapped_column(db.Float, nullable=False)
+
+    # Hash password before storing it
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+        # Verify password during login
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     # Many-to-Many relationship with Service_ticket
     service_tickets: Mapped[List["Service_ticket"]] = db.relationship(secondary=service_mechanics, back_populates="mechanics")

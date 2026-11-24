@@ -9,11 +9,12 @@ from flask import request, jsonify
 
 SECRET_KEY = "a super secret, secret key"
 
-def encode_token(customer_id): #using unique pieces of info to make our tokens user specific
+def encode_token(user_id, user_type): #using unique pieces of info to make our tokens user specific
     payload = {
         'exp': datetime.now(timezone.utc) + timedelta(days=0,hours=1), #Setting the expiration time to an hour past now
         'iat': datetime.now(timezone.utc), #Issued at
-        'sub':  str(customer_id) #This needs to be a string or the token will be malformed and won't be able to be decoded.
+        'sub':  str(user_id), #This needs to be a string or the token will be malformed and won't be able to be decoded.
+        'user_type': user_type
     }
 
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -38,13 +39,13 @@ def token_required(f):
             # Decode the token
             data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             print('Decoded token data =', data)
-            customer_id = data['sub']  # Fetch the Customer ID
+            authenticated_user_id = data['sub']   # Fetch the User ID
             
         except jose.exceptions.ExpiredSignatureError:
-             return jsonify({'message': 'Token has expired!'}), 401
+            return jsonify({'message': 'Token has expired!'}), 401
         except jose.exceptions.JWTError:
-             return jsonify({'message': 'Invalid token!'}), 401
+            return jsonify({'message': 'Invalid token!'}), 401
 
-        return f(customer_id, *args, **kwargs)
+        return f(*args, authenticated_user_id=authenticated_user_id, **kwargs)
 
     return decorated

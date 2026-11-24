@@ -34,7 +34,7 @@ def create_service_ticket():
     return service_ticket_schema.jsonify(new_service_ticket), 201
 
 
-# PUT /service_tickets/<int:id>/assign-mechanic/<int:mechanic_id> - Update a specific service ticket by assigning a mechanic
+# PUT /service_tickets/<int:id>/assign-mechanic/<int:mechanic_id> - Updates a specific service ticket by assigning a mechanic
 @service_tickets_bp.route('/<int:service_ticket_id>/assign-mechanic/<int:mechanic_id>', methods=['PUT'])
 def assign_mechanic(service_ticket_id, mechanic_id):
     service_ticket = db.session.get(Service_ticket, service_ticket_id)
@@ -76,34 +76,37 @@ def assign_mechanic(service_ticket_id, mechanic_id):
 # The customer_id is extracted from the token and used to validate that the customer is authorized to remove a mechanic from the service ticket.
 @service_tickets_bp.route('/<int:service_ticket_id>/remove-mechanic/<int:mechanic_id>', methods=['PUT'])
 @token_required
-def remove_mechanic(customer_id, service_ticket_id, mechanic_id):
+def remove_mechanic(authenticated_user_id, service_ticket_id, mechanic_id):
     service_ticket = db.session.get(Service_ticket, service_ticket_id)
-    mechanic = db.session.get(Mechanic, mechanic_id)
-    customer = db.session.get(Customer, service_ticket.customer_id)  # Get the customer associated with the service ticket
 
-    #Validate that the customer, service ticket and mechanic exist
-    if not customer:
-        return jsonify({"error": "Customer not found."}), 404
-    
     if not service_ticket:
         return jsonify({"error": "Service ticket not found."}), 404
+
+    # Verify that the authenticated user can manage this service ticket
+    if service_ticket.customer_id != int(authenticated_user_id):
+        return jsonify({"error": "You are not authorized to modify this service ticket."}), 403
+    
+    # Find the mechanic
+    mechanic = db.session.get(Mechanic, mechanic_id)
 
     if not mechanic:
         return jsonify({"error": "Mechanic not found."}), 404
 
-    #Check if the mechanic is assigned to the service ticket
+    # Check if the mechanic is assigned to the service ticket
     if mechanic not in service_ticket.mechanics:
         return jsonify({"error": "Mechanic is not assigned to this service ticket."}), 404
+
     try:
         service_ticket.mechanics.remove(mechanic)
         db.session.commit()
+
         return jsonify({
             "message": "Mechanic successfully removed from service ticket",
             "service_ticket": service_ticket.id,
             "mechanic_id": mechanic.id
         }), 200
-    
-    except Exception as e:
+
+    except Exception:
         db.session.rollback()
         return jsonify({"error": "Unable to update mechanic assignment."}), 500
 
@@ -157,8 +160,8 @@ def get_all_assigned_mechanics():
 #Create a route that requires a token to access, and returns the service tickets associated with the authenticated customer
 @service_tickets_bp.route('/my-tickets', methods=['GET'])
 @token_required
-def get_my_tickets(customer_id):
-    query = select(Service_ticket).where(Service_ticket.customer_id == customer_id)
+def get_my_tickets(authenticated_user_id):
+    query = select(Service_ticket).where(Service_ticket.customer_id == authenticated_user_id)
     service_tickets = db.session.execute(query).scalars().all()
 
     return service_tickets_schema.jsonify(service_tickets), 200
@@ -166,6 +169,7 @@ def get_my_tickets(customer_id):
 
 # PUT /service_tickets/<int:id>/edit - Edit a specific service ticket by adding or removing mechanics
 @service_tickets_bp.route('/<int:ticket_id>/edit', methods=['PUT'])
+@limiter.limit("10 per hour")                                                       # Prevent excessive updates
 def edit_service_ticket(ticket_id):
 
     ticket = db.session.get(Service_ticket, ticket_id)
@@ -240,6 +244,7 @@ def edit_service_ticket(ticket_id):
 
 # Delete a specific service ticket by ID
 @service_tickets_bp.route('/<int:ticket_id>', methods=['DELETE'])
+@limiter.limit('10 per hour')                                                           # Protects against repeated deletion attempts
 def delete_service_ticket(ticket_id):
     service_ticket = db.session.get(Service_ticket, ticket_id)
 

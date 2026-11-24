@@ -20,7 +20,7 @@ class EditServiceTicketSchema(ma.Schema):
         fields = ('add_mechanic_ids', 'remove_mechanic_ids')
 
 
- #Create instances of the schemas for use in routes 
+#Create instances of the schemas for use in routes 
 service_ticket_schema = ServiceTicketSchema()
 service_tickets_schema = ServiceTicketSchema(many=True)
 
