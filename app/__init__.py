@@ -21,8 +21,19 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 def create_app(config_name):
     app = Flask(__name__)
 
+    if config_name == 'DevelopmentConfig':
+        from config import load_development_environment
+        load_development_environment()
+
     # Load configuration from the specified config object
     app.config.from_object(f'config.{config_name}')
+
+    # Verify that DB URL and secret key are available before initializing extensions
+    if not app.config.get('SQLALCHEMY_DATABASE_URI'):
+        raise RuntimeError("SQLALCHEMY_DATABASE_URI is not configured.")
+
+    if not app.config.get('SECRET_KEY'):
+        raise RuntimeError("SECRET_KEY is not configured.")
 
     # initialize extensions
     ma.init_app(app)
