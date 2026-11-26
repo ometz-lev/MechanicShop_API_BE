@@ -3,13 +3,16 @@
 # app/utils/util.py
 from datetime import datetime, timedelta, timezone
 from jose import jwt
-import jose, os
+import jose
 from functools import wraps
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 
-SECRET_KEY = os.environ.get('SECRET_KEY') or "super secret secrets"
 
+#Create authentication token
 def encode_token(user_id, user_type): #using unique pieces of info to make our tokens user specific
+
+    secret_key = current_app.config['SECRET_KEY']
+
     payload = {
         'exp': datetime.now(timezone.utc) + timedelta(days=0,hours=1), #Setting the expiration time to an hour past now
         'iat': datetime.now(timezone.utc), #Issued at
@@ -17,7 +20,7 @@ def encode_token(user_id, user_type): #using unique pieces of info to make our t
         'user_type': user_type
     }
 
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    token = jwt.encode(payload, secret_key, algorithm='HS256')
     return token
 
 
@@ -37,12 +40,15 @@ def token_required(f):
 
         try:
             # Decode the token
-            data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            secret_key = current_app.config['SECRET_KEY']
+            data = jwt.decode(token, secret_key, algorithms=['HS256'])
+
             print('Decoded token data =', data)
             authenticated_user_id = data['sub']   # Fetch the User ID
             
         except jose.exceptions.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
+        
         except jose.exceptions.JWTError:
             return jsonify({'message': 'Invalid token!'}), 401
 

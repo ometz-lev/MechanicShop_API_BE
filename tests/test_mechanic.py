@@ -3,7 +3,6 @@ from app import create_app
 from app.models import Customer, Mechanic, Service_ticket
 from datetime import date
 from app.extensions import db, cache
-from app.utils.util import SECRET_KEY
 from jose import jwt
 import unittest
 
@@ -128,7 +127,7 @@ class TestMechanic(unittest.TestCase):
 
         decoded_token = jwt.decode(
             response.json['auth_token'],
-            SECRET_KEY,
+            self.app.config['SECRET_KEY'],
             algorithms=['HS256']
         )
 

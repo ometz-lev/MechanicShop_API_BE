@@ -58,7 +58,7 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(response.json['name'], "Coolant")
         self.assertEqual(response.json['price'], 20.99)
 
-    # Test 4: Update inventory item - GET
+    # Test 4: Update inventory item - PUT
     def test_update_inventory(self):
         data = {"name" : "Premium Coolant", "price" : 25.99}
     
@@ -103,7 +103,7 @@ class TestInventory(unittest.TestCase):
         
         data = {"name" : "New Coolant", "price" : 20.00}
 
-        response = self.client.get(f'{self.BASE_URL}/999', json=data)
+        response = self.client.put(f'{self.BASE_URL}/999', json=data)
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json['error'], "Inventory item not found.")

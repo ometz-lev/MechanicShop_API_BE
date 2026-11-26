@@ -2,7 +2,6 @@
 from app import create_app
 from app.models import db, Customer
 from app.extensions import cache
-from app.utils.util import encode_token, SECRET_KEY
 from werkzeug.security import generate_password_hash
 from jose import jwt
 import unittest
@@ -117,7 +116,7 @@ class TestCustomer(unittest.TestCase):
 
         decoded_token = jwt.decode(
             auth_token,
-            SECRET_KEY,
+            self.app.config['SECRET_KEY'],
             algorithms=['HS256']
         )
 

@@ -79,7 +79,8 @@ class TestServiceTicket(unittest.TestCase):
 
     # Helper: Generate authentication headers for Customer
     def get_customer_auth_headers(self):
-        token = encode_token(self.customer_id, 'customer')
+        with self.app.app_context():
+            token = encode_token(self.customer_id, 'customer')
         return {'Authorization': f'Bearer {token}'}
 
     def create_additional_mechanic(self, name, email):

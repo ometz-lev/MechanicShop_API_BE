@@ -8,6 +8,8 @@ class DevelopmentConfig:
 
 # Testing Config
 class TestingConfig:
+    SECRET_KEY = 'test-secret-key'
+    
     SQLALCHEMY_DATABASE_URI = 'sqlite:///testing.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TESTING = True
