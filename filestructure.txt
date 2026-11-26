@@ -15,11 +15,15 @@
 │	│				├──__init__.py  - Initialize Service Ticket Blueprint
 │	│				├── routes.py  - Create Service Ticket Controllers/routes
 │	│				└── schemas.py
+|	│		├──/inventory
+│	│				├──__init__.py  - Initialize Inventory Blueprint
+│	│				├── routes.py  - Create Inventory Controllers/routes
+│	│				└── schemas.py
 │   ├── /utils
 │	│        └── util.py
 │	├── /static
 │	│         └── swagger.yaml
 │   └── models.py
-├── run.py
+├── flask_app.py
 ├── .gitignore
 └── config.py

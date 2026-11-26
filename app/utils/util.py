@@ -3,11 +3,11 @@
 # app/utils/util.py
 from datetime import datetime, timedelta, timezone
 from jose import jwt
-import jose
+import jose, os
 from functools import wraps
 from flask import request, jsonify
 
-SECRET_KEY = "a super secret, secret key"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "super secret secrets"
 
 def encode_token(user_id, user_type): #using unique pieces of info to make our tokens user specific
     payload = {
