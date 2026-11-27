@@ -1,4 +1,4 @@
-
+# This file defines the GitHub Actions workflow that automates tasks in the project’s CI/CD pipeline.
 name: Flask CI
 
 on:
