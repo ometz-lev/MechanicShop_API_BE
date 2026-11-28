@@ -48,6 +48,20 @@ def create_app(config_name):
     app.register_blueprint(inventory_bp, url_prefix='/inventory')
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
+    @app.route('/')
+    def home():
+        return jsonify({
+            "message": "Welcome to the Mechanic Shop Management API!",
+            "status": "API is running",
+            "documentation": "/api/docs",
+            "endpoints": {
+                "customers": "/customers",
+                "mechanics": "/mechanics",
+                "service_tickets": "/service-tickets",
+                "inventory": "/inventory"
+            }
+        }), 200
+
     # Handle rate limit exceeded errors
     @app.errorhandler(429)
     def ratelimit_handler(e):
